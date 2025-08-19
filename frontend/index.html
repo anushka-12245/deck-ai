@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Case Deck Evaluator</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #121212; /* deep charcoal black */
+        color: #ffffff; /* white text */
+      }
+
+      header {
+        background: linear-gradient(135deg, #8b0000, #2b0000); /* deep dark red gradient */
+        padding: 4rem 2rem;
+        text-align: center;
+      }
+
+      header h1 {
+        font-size: 3rem;
+        margin: 0;
+        color: #ffffff;
+      }
+
+      header p {
+        font-size: 1.2rem;
+        margin-top: 1rem;
+        color: #f0f0f0;
+      }
+
+      main {
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .upload-section {
+        margin-top: 2rem;
+        background-color: #1e1e1e;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.6);
+        text-align: center;
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .upload-section h2 {
+        margin-bottom: 1rem;
+      }
+
+      input[type="file"] {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      button {
+        background: linear-gradient(135deg, #b22222, #8b0000);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: linear-gradient(135deg, #ff4444, #b22222);
+      }
+
+      #feedback {
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #2b2b2b;
+        border-radius: 8px;
+        display: none;
+        white-space: pre-line;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Case Deck Evaluator</h1>
+      <p>
+        Upload your case competition decks and get instant AI-powered feedback
+        on content, clarity, and visuals.
+      </p>
+    </header>
+
+    <main>
+      <div class="upload-section">
+        <h2>Upload Your Deck</h2>
+        <form id="uploadForm">
+          <input type="file" id="fileInput" name="file" required />
+          <br />
+          <button type="submit">Submit for Evaluation</button>
+        </form>
+        <div id="feedback"></div>
+      </div>
+    </main>
+
+    <script>
+      const form = document.getElementById("uploadForm");
+      const feedbackDiv = document.getElementById("feedback");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const fileInput = document.getElementById("fileInput");
+        if (!fileInput.files.length) {
+          alert("Please choose a file first.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        feedbackDiv.style.display = "block";
+        feedbackDiv.textContent = "⏳ Uploading and analyzing deck...";
+
+        try {
+          const response = await fetch("http://127.0.0.1:8000/upload", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+          if (data.error) {
+            feedbackDiv.textContent = "❌ Error: " + data.error;
+          } else {
+            feedbackDiv.textContent = "✅ Feedback:\n\n" + data.feedback;
+          }
+        } catch (err) {
+          feedbackDiv.textContent =
+            "⚠️ Failed to connect to backend:\n" + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>
