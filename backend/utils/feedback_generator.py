@@ -30,7 +30,7 @@ def get_feedback(text: str) -> str:
     response = requests.post(url, headers=headers, json=data)
     response.raise_for_status()
     result = response.json()
-    return clean_response(result["choices"][0]["message"]["content"])
+    return result["choices"][0]["message"]["content"]
 
 def chat_with_ai(query: str) -> str:
     url = "https://api.fireworks.ai/inference/v1/chat/completions"
@@ -50,4 +50,4 @@ def chat_with_ai(query: str) -> str:
     response = requests.post(url, headers=headers, json=data)
     response.raise_for_status()
     result = response.json()
-    return clean_response(result["choices"][0]["message"]["content"])
+    return result["choices"][0]["message"]["content"]
